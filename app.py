@@ -103,4 +103,10 @@ with gr.Blocks(title="AgentHub - Hierarchical Multi-Agent System") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch()
+    # For Render deployment, bind to 0.0.0.0 and use PORT environment variable
+    port = int(os.environ.get("PORT", 7860))
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=port,
+        show_error=True
+    )
