@@ -3,13 +3,21 @@ import os
 import sys
 import importlib.util
 from dotenv import load_dotenv
-from google.adk import Runner
-from google.adk.sessions import InMemorySessionService
-from google.genai import types
-import uuid
 
 # Load environment variables from .env file
 load_dotenv()
+
+print("Starting app initialization...")
+
+try:
+    from google.adk import Runner
+    from google.adk.sessions import InMemorySessionService
+    from google.genai import types
+    import uuid
+    print("✓ All imports successful")
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    sys.exit(1)
 
 # Load the agent module from the my_first_agent folder
 agent_path = os.path.join(os.path.dirname(__file__), "my_first_agent", "agent.py")
@@ -19,10 +27,12 @@ spec.loader.exec_module(agent_module)
 
 # Get the root_agent from the loaded module
 root_agent = agent_module.root_agent
+print("✓ Agent loaded successfully")
 
 # Create session service and runner
 session_service = InMemorySessionService()
 runner = Runner(agent=root_agent, app_name="my_first_agent", session_service=session_service)
+print("✓ Runner created successfully")
 
 # Track sessions per user
 sessions = {}
@@ -69,44 +79,57 @@ def chat_with_agent(message, history):
         import traceback
         return f"❌ Agent Error: {str(e)}\n\nTraceback:\n{traceback.format_exc()}"
 
-    except Exception as e:
-        import traceback
-        return f"Error: {str(e)}\n\nTraceback:\n{traceback.format_exc()}"
-
 # Create Gradio interface
-with gr.Blocks(title="AgentHub - Hierarchical Multi-Agent System") as demo:
-    gr.Markdown("""
-    # 🤖 AgentHub: Hierarchical Multi-Agent System
-    
-    This agent can help you with:
-    - 🔍 **Web Search**: Search the internet for information
-    - 💻 **Code Execution**: Perform calculations and run Python code
-    
-    ## Example Prompts:
-    - "What is the current population of Tokyo?"
-    - "Calculate 25 * 17 + 42"
-    - "What's the weather in Paris and convert 20°C to Fahrenheit"
-    """)
-    
-    chatbot = gr.ChatInterface(
-        fn=chat_with_agent,
-        examples=[
-            "What is the current population of Tokyo?",
-            "Calculate 25 * 17 + 42",
-            "What's the capital of France and its population?",
-            "Convert 100 USD to EUR",
-            "What's 15% of 250?"
-        ],
-        title="💬 Chat with the Agent",
-        description="Ask questions or request calculations",
-        theme=gr.themes.Soft(),
-    )
+print("Creating Gradio interface...")
+try:
+    with gr.Blocks(title="AgentHub - Hierarchical Multi-Agent System") as demo:
+        gr.Markdown("""
+        # 🤖 AgentHub: Hierarchical Multi-Agent System
+        
+        This agent can help you with:
+        - 🔍 **Web Search**: Search the internet for information
+        - 💻 **Code Execution**: Perform calculations and run Python code
+        
+        ## Example Prompts:
+        - "What is the current population of Tokyo?"
+        - "Calculate 25 * 17 + 42"
+        - "What's the weather in Paris and convert 20°C to Fahrenheit"
+        """)
+        
+        chatbot = gr.ChatInterface(
+            fn=chat_with_agent,
+            examples=[
+                "What is the current population of Tokyo?",
+                "Calculate 25 * 17 + 42",
+                "What's the capital of France and its population?",
+                "Convert 100 USD to EUR",
+                "What's 15% of 250?"
+            ],
+            title="💬 Chat with the Agent",
+            description="Ask questions or request calculations",
+            theme=gr.themes.Soft(),
+        )
+    print("✓ Gradio interface created successfully")
+except Exception as e:
+    print(f"❌ Error creating Gradio interface: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 
 if __name__ == "__main__":
     # For Render deployment, bind to 0.0.0.0 and use PORT environment variable
     port = int(os.environ.get("PORT", 7860))
-    demo.launch(
-        server_name="0.0.0.0",
-        server_port=port,
-        show_error=True
-    )
+    print(f"Starting Gradio app on port {port}...")
+    print(f"GOOGLE_API_KEY is set: {bool(os.environ.get('GOOGLE_API_KEY'))}")
+
+    try:
+        demo.launch(
+            server_name="0.0.0.0",
+            server_port=port,
+            show_error=True
+        )
+    except Exception as e:
+        print(f"❌ Error launching app: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
