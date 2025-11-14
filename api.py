@@ -55,15 +55,10 @@ sessions = {}
 # Create FastAPI app
 app = FastAPI(title="CodeFlow AI - Professional Development Assistant")
 
-# Configure CORS
+# Configure CORS - Allow all Vercel deployments
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://code-flow-ai-frontend.vercel.app",
-        "https://code-flow-ai-frontend-*.vercel.app"  # Allow all Vercel preview deployments
-    ],
+    allow_origins=["*"],  # Allow all origins (can be restricted later)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
