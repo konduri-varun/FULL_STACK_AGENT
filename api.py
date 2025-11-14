@@ -61,8 +61,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:3001",
-        "https://codeflow-ai-frontend.vercel.app",
-        "https://*.vercel.app"  # Allow all Vercel preview deployments
+        "https://code-flow-ai-frontend.vercel.app",
+        "https://code-flow-ai-frontend-*.vercel.app"  # Allow all Vercel preview deployments
     ],
     allow_credentials=True,
     allow_methods=["*"],
