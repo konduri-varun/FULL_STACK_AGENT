@@ -1,5 +1,6 @@
 # AI and ML Framework
-google-adk>=0.1.0
+google-adk>=1.17.0
+google-genai>=1.48.0
 
 # Environment Management
 python-dotenv>=1.0.0
